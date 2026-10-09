@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELIOTEC | Tecnología en línea y Seguimiento de Envíos</title>
+<!-- Tailwind CSS for modern responsive styling -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts & FontAwesome -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: '#2563eb',
+          brand2: '#7c3aed',
+          dark: '#0f172a'
+        },
+        fontFamily: {
+          sans: ['Inter', 'sans-serif']
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .map-pulse {
+    animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.3); opacity: 0.4; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+  }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('store')">
+        <div class="text-2xl font-black tracking-tight text-blue-600">ELIO<span class="text-purple-600">TEC</span></div>
+        <span class="hidden sm:inline-block px-2.5 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-full border border-blue-200">+1,000 Bocinas y Audio MX</span>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6 font-medium text-slate-600">
+        <button onclick="switchTab('store')" id="nav-store" class="hover:text-blue-600 transition text-blue-600 font-bold">Tienda</button>
+        <button onclick="switchTab('tracker')" id="nav-tracker" class="hover:text-blue-600 transition">Rastrear Pedido</button>
+        <button onclick="switchTab('admin')" id="nav-admin" class="hover:text-blue-600 transition hidden">Panel Admin</button>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button onclick="openCart()" class="relative p-2.5 text-slate-700 hover:bg-slate-100 rounded-xl transition flex items-center gap-1.5 border border-slate-200">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="hidden sm:inline text-sm font-bold">Carrito</span>
+          <span id="cart-count" class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold shadow">0</span>
+        </button>
+
+        <div id="auth-container">
+          <button onclick="openAuthModal('login')" class="px-4 py-2 text-sm font-bold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition shadow-sm">
+            <i class="fa-solid fa-user mr-1.5"></i> Ingresar
+          </button>
+        </div>
+
+        <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 text-slate-700 hover:bg-slate-100 rounded-xl">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 border-t border-slate-100 bg-white flex flex-col gap-2">
+      <button onclick="switchTab('store'); toggleMobileMenu();" class="text-left py-2 font-semibold text-blue-600">Tienda</button>
+      <button onclick="switchTab('tracker'); toggleMobileMenu();" class="text-left py-2 font-semibold text-slate-700">Rastrear Pedido</button>
+      <button onclick="switchTab('admin'); toggleMobileMenu();" id="mobile-admin-btn" class="text-left py-2 font-semibold text-slate-700 hidden">Panel Admin</button>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <div id="view-store" class="space-y-8">
+      <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="space-y-4 max-w-xl">
+          <span class="bg-blue-500/30 border border-blue-400/40 text-blue-200 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Catálogo Especializado en México</span>
+          <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">+1,000 Modelos de Bocinas y Audio Accesible.</h1>
+          <p class="text-slate-300 text-base sm:text-lg">Descubre más de un millar de opciones en audio portátil, barras de sonido, audífonos y sistemas de sonido con precios reales en México y envíos rastreables[cite: 1].</p>
+          <div class="flex flex-wrap gap-4 pt-2">
+            <a href="#catalogo" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-600/30">Explorar Catálogo</a>
+            <button onclick="switchTab('tracker')" class="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold rounded-xl transition backdrop-blur-sm">Rastrear Envío</button>
+          </div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl w-full md:w-80 shadow-2xl space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-lg"><i class="fa-solid fa-tag text-emerald-400 mr-2"></i> Precios Reales MXN</span>
+          </div>
+          <div class="space-y-2 text-sm text-slate-200">
+            <div class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> IVA y aranceles incluidos</div>
+            <div class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> Garantía nacional directa</div>
+            <div class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> Envíos express a todo México</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="catalogo" class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-black text-slate-900">Catálogo Masivo de Audio (+1000 Bocinas y Sistemas)</h2>
+            <p class="text-sm text-slate-500">Selecciona una categoría para explorar entre miles de opciones accesibles en México[cite: 1].</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="filterProducts('all')" class="px-4 py-2 text-xs font-bold bg-slate-900 text-white rounded-xl filter-btn active-filter" data-cat="all">Todos</button>
+            <button onclick="filterProducts('Audio')" class="px-4 py-2 text-xs font-bold bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-100 filter-btn" data-cat="Audio">Bocinas y Audio (+1,000)</button>
+            <button onclick="filterProducts('Laptops')" class="px-4 py-2 text-xs font-bold bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-100 filter-btn" data-cat="Laptops">Laptops</button>
+            <button onclick="filterProducts('Wearables')" class="px-4 py-2 text-xs font-bold bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-100 filter-btn" data-cat="Wearables">Wearables</button>
+            <button onclick="filterProducts('Componentes')" class="px-4 py-2 text-xs font-bold bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-100 filter-btn" data-cat="Componentes">Componentes</button>
+            <button onclick="filterProducts('Smartphones')" class="px-4 py-2 text-xs font-bold bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-100 filter-btn" data-cat="Smartphones">Smartphones</button>
+            <button onclick="filterProducts('Opcionales')" class="px-4 py-2 text-xs font-bold bg-white text-purple-700 border border-purple-200 rounded-xl hover:bg-purple-50 filter-btn" data-cat="Opcionales"><i class="fa-solid fa-plus-circle mr-1"></i> Accesorios</button>
+          </div>
+        </div>
+
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+      </div>
+    </div>
+
+    <div id="view-tracker" class="hidden space-y-8">
+      <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div class="max-w-xl mx-auto text-center space-y-4">
+          <div class="inline-flex p-3 bg-blue-50 text-blue-600 rounded-2xl text-2xl">
+            <i class="fa-solid fa-truck-fast"></i>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900">Rastrea tu Pedido en Tiempo Real</h2>
+          <p class="text-sm text-slate-500">Ingresa tu número de pedido (ej. <span class="font-bold text-slate-700">ELI-1001</span>).</p>
+          
+          <div class="flex gap-2 max-w-md mx-auto">
+            <input type="text" id="track-input" placeholder="Ej. ELI-1001" class="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold uppercase focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="searchTracking()" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-md">Consultar</button>
+          </div>
+        </div>
+
+        <div id="tracking-display" class="mt-8 pt-8 border-t border-slate-100 hidden"></div>
+      </div>
+    </div>
+
+    <div id="view-admin" class="hidden space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div>
+          <span class="px-3 py-1 text-xs font-bold bg-purple-50 text-purple-700 rounded-full border border-purple-200">Panel de Control</span>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">Gestión de Ventas y Envíos</h2>
+          <p class="text-sm text-slate-500">Supervisa las ventas totales y actualiza estatus.</p>
+        </div>
+        <button onclick="renderAdmin()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition flex items-center gap-2">
+          <i class="fa-solid fa-rotate"></i> Actualizar Datos
+        </button>
+      </div>
+
+      <div id="admin-stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm overflow-hidden">
+        <h3 class="font-bold text-lg text-slate-900 mb-4">Listado de Pedidos y Estatus de Ruta</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-b border-slate-200">
+                <th class="p-3.5 font-bold">Pedido</th>
+                <th class="p-3.5 font-bold">Fecha</th>
+                <th class="p-3.5 font-bold">Cliente</th>
+                <th class="p-3.5 font-bold">Total</th>
+                <th class="p-3.5 font-bold">Pago</th>
+                <th class="p-3.5 font-bold">Estatus Actual</th>
+                <th class="p-3.5 font-bold">Acción / Cambiar Estatus</th>
+              </tr>
+            </thead>
+            <tbody id="admin-orders-body" class="text-sm divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="cart-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex justify-end transition-opacity">
+    <div class="bg-white w-full max-w-md h-full flex flex-col shadow-2xl transform transition-transform">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <h3 class="text-lg font-black text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-cart-shopping text-blue-600"></i> Tu Carrito de Compras
+        </h3>
+        <button onclick="closeCart()" class="p-2 text-slate-400 hover:text-slate-700 rounded-xl">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+      
+      <div id="cart-items-container" class="flex-1 overflow-y-auto p-5 space-y-4"></div>
+
+      <div class="p-5 border-t border-slate-100 bg-slate-50 space-y-3">
+        <div class="flex justify-between text-slate-600 text-sm">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="font-bold text-slate-900">$0.00</span>
+        </div>
+        <div class="flex justify-between text-slate-600 text-sm">
+          <span>Envío Rastrable</span>
+          <span class="font-bold text-emerald-600">¡Gratis!</span>
+        </div>
+        <div class="flex justify-between text-lg font-black text-slate-900 pt-2 border-t border-slate-200">
+          <span>Total</span>
+          <span id="cart-total">$0.00</span>
+        </div>
+        <button onclick="proceedToCheckout()" id="checkout-btn" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
+          <span>Proceder al Pago</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="auth-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl relative space-y-6">
+      <button onclick="closeAuthModal()" class="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-700 rounded-xl">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+
+      <div class="text-center space-y-2">
+        <div class="text-2xl font-black text-blue-600">ELIO<span class="text-purple-600">TEC</span></div>
+        <h3 id="auth-title" class="text-xl font-bold text-slate-900">Iniciar Sesión</h3>
+        <p class="text-xs text-slate-500">Accede para gestionar tus compras.</p>
+      </div>
+
+      <div class="flex bg-slate-100 p-1 rounded-xl">
+        <button onclick="setAuthMode('login')" id="tab-login" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm transition">Iniciar Sesión</button>
+        <button onclick="setAuthMode('register')" id="tab-register" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 transition">Registrarse</button>
+      </div>
+
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+        <div id="name-field-container" class="space-y-1.5 hidden">
+          <label class="text-xs font-bold text-slate-700 uppercase">Nombre Completo</label>
+          <input type="text" id="auth-name" placeholder="Ej. Carlos Mendoza" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-slate-700 uppercase">Correo Electrónico</label>
+          <input type="email" id="auth-email" required placeholder="cliente@correo.com" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-slate-700 uppercase">Contraseña</label>
+          <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition shadow-md">
+          Ingresar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl relative space-y-6 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeCheckoutModal()" class="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-700 rounded-xl">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+
+      <div>
+        <span class="px-3 py-1 text-xs font-bold bg-blue-50 text-blue-700 rounded-full border border-blue-200">Checkout Seguro</span>
+        <h3 class="text-xl font-bold text-slate-900 mt-1">Finalizar Compra</h3>
+        <p class="text-xs text-slate-500">Ingresa tus datos de envío para generar tu pedido en México.</p>
+      </div>
+
+      <form onsubmit="completeOrder(event)" class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-slate-700 uppercase">Nombre Completo del Destinatario</label>
+          <input type="text" id="chk-name" required placeholder="Ej. Ana Sofía Garza" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold text-slate-700 uppercase">Teléfono de Contacto</label>
+            <input type="tel" id="chk-phone" required placeholder="55 1234 5678" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold text-slate-700 uppercase">Método de Pago</label>
+            <select id="chk-pay" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 font-medium">
+              <option value="Tarjeta de Crédito">Tarjeta de Crédito / Débito</option>
+              <option value="PayPal">PayPal</option>
+              <option value="Transferencia SPEI">Transferencia SPEI</option>
+              <option value="Pago contra entrega">Pago contra entrega</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center">
+            <label class="text-xs font-bold text-slate-700 uppercase">Dirección de Entrega (Calle, Número, Colonia)</label>
+            <button type="button" onclick="autofillLocation()" class="text-xs font-bold text-blue-600 hover:text-blue-500 flex items-center gap-1 transition">
+              <i class="fa-solid fa-location-crosshairs"></i> Usar mi ubicación actual
+            </button>
+          </div>
+          <textarea id="chk-address" rows="2" required placeholder="Av. Insurgentes Sur 1602, Col. Crédito Constructor, CDMX" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-600">Productos en el pedido:</span>
+            <span id="chk-items-count" class="font-bold text-slate-900">0</span>
+          </div>
+          <div class="flex justify-between text-base font-black">
+            <span class="text-slate-800">Total a Pagar:</span>
+            <span id="chk-total-amount" class="text-blue-600">$0.00</span>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-lock"></i>
+          <span>Confirmar y Pagar Pedido</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-semibold">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+    <span id="toast-msg">¡Operación exitosa!</span>
+  </div>
+
+  <footer class="bg-slate-900 text-slate-400 mt-16 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div>
+        <div class="text-xl font-black text-white">ELIO<span class="text-purple-500">TEC</span></div>
+        <p class="text-xs text-slate-500 mt-1">Plataforma líder en tecnología con más de 1,000 modelos de bocinas y audio accesibles[cite: 1].</p>
+      </div>
+      <div class="flex gap-6 text-sm">
+        <a href="#catalogo" onclick="switchTab('store')" class="hover:text-white transition">Tienda</a>
+        <a href="#" onclick="switchTab('tracker')" class="hover:text-white transition">Rastrear Pedido</a>
+        <a href="#" onclick="openAuthModal('login')" class="hover:text-white transition">Mi Cuenta</a>
+      </div>
+      <div class="text-xs text-slate-600">
+        © 2026 ELIOTEC. Todos los derechos reservados.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- GENERADOR MASIVO DE +1,000 ARTÍCULOS DE BOCINAS Y AUDIO (Precios Reales en MXN) ---
+    function generarCatalogoMasivo() {
+      const marcasAudio = ["JBL", "Sony", "Bose", "Marshall", "Ultimate Ears", "Harman Kardon", "Sennheiser", "Audio-Technica", "Pioneer", "Yamaha", "LG", "Samsung", "Anker Soundcore", "Klipsch", "Polk Audio"];
+      const tiposAudio = [
+        "Bocina Bluetooth Portátil Impermeable",
+        "Audífonos Inalámbricos Over-Ear con Cancelación de Ruido",
+        "Barra de Sonido Dolby Atmos con Subwoofer Inalámbrico",
+        "Audífonos True Wireless Earbuds Deportivos",
+        "Sistema de Audio Torre Hi-Fi con Bluetooth",
+        "Bocina Inteligente con Asistente de Voz",
+        "Audífonos de Monitorización de Estudio",
+        "Minicomponente de Alta Potencia con Bajos Reforzados"
+      ];
+      
+      let lista = [];
+      let idCounter = 1;
+
+      // 1. Generar más de 1,000 artículos específicos de bocinas y audio con precios accesibles reales para México
+      for (let i = 1; i <= 1000; i++) {
+        const marca = marcasAudio[(i - 1) % marcasAudio.length];
+        const tipo = tiposAudio[(i * 3) % tiposAudio.length];
+        const precioBase = 499 + ((i * 47) % 8500); // Rango accesible de precios en MXN (desde ~$500 hasta ~$9,000 pesos)
+        
+        lista.push({
+          id: idCounter++,
+          name: `${marca} ${tipo} Pro Series ${i}`,
+          category: "Audio",
+          price: precioBase,
+          rating: (4.4 + ((i % 6) * 0.1)).toFixed(1),
+          img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=500&q=80",
+          desc: `Dispositivo de audio modelo ${i} de la marca ${marca}, diseñado para ofrecer sonido de alta fidelidad, excelente autonomía y gran durabilidad en México.`
+        });
+      }
+
+      // 2. Productos opcionales y otras categorías complementarias
+      const otrosProductos = [
+        { id: idCounter++, name: "Laptop HP Pavilion 15.6\" Ryzen 5", category: "Laptops", price: 13499, rating: 4.7, img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80", desc: "Laptop ideal para estudio y trabajo multitarea diario." },
+        { id: idCounter++, name: "Smartwatch Ultra Series 9", category: "Wearables", price: 3499, rating: 4.7, img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80", desc: "Caja de titanio de grado aeroespacial y GPS de doble frecuencia." },
+        { id: idCounter++, name: "Teclado Mecánico Keychron Q1 Pro", category: "Componentes", price: 3899, rating: 4.7, img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&q=80", desc: "Teclado inalámbrico personalizado con cuerpo de aluminio CNC." },
+        { id: idCounter++, name: "iPhone 15 Pro Max 256GB Titanio", category: "Smartphones", price: 26999, rating: 4.9, img: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500&q=80", desc: "Diseño en titanio aeroespacial y chip A17 Pro." },
+        { id: idCounter++, name: "Mochila Antirrobo para Laptop 15.6\"", category: "Opcionales", price: 899, rating: 4.7, img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80", desc: "Diseño ergonómico, resistente al agua y compartimento seguro." }
+      ];
+
+      return lista.concat(otrosProductos);
+    }
+
+    const PRODUCTS = generarCatalogoMasivo();
+
+    const DEFAULT_ORDERS = [
+      {
+        id: "ELI-1001",
+        date: "2026-10-05 14:30",
+        name: "Carlos Mendoza",
+        phone: "5512345678",
+        pay: "Tarjeta de Crédito",
+        address: "Av. Insurgentes Sur 1602, CDMX",
+        items: [PRODUCTS[0], PRODUCTS[5]],
+        total: 2498,
+        status: "En camino",
+        driver: { name: "Roberto Gómez", vehicle: "Nissan NP300 (Placas: MX-882-A)", lat: 19.38, lng: -99.16, speed: "42 km/h" },
+        routeSteps: ["Centro de Distribución Sur", "En ruta a destino final"]
+      }
+    ];
+
+    let orders = loadSalesControlOrders();
+
+    function loadSalesControlOrders() {
+      try {
+        const saved = localStorage.getItem("eliotec_orders");
+        if (saved !== null) {
+          const parsed = JSON.parse(saved);
+          return Array.isArray(parsed) ? parsed : [];
+        }
+      } catch (err) {
+        console.error("No se pudo leer el Control de ventas:", err);
+      }
+      localStorage.setItem("eliotec_orders", JSON.stringify(DEFAULT_ORDERS));
+      return [...DEFAULT_ORDERS];
+    }
+
+    function refreshOrdersFromSalesControl() {
+      orders = loadSalesControlOrders();
+      return orders;
+    }
+    let cart = JSON.parse(localStorage.getItem("eliotec_cart") || "[]");
+    let currentUser = JSON.parse(localStorage.getItem("eliotec_current_user") || "null");
+    let authModeState = 'login';
+
+    const money = n => n.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
+
+    function calcularFechaEstimada(dateString) {
+      let fechaBase = new Date(dateString);
+      if (isNaN(fechaBase.getTime())) {
+        fechaBase = new Date();
+      }
+      let diasAgregados = 0;
+      while (diasAgregados < 5) {
+        fechaBase.setDate(fechaBase.getDate() + 1);
+        let diaSemana = fechaBase.getDay();
+        if (diaSemana !== 0 && diaSemana !== 6) {
+          diasAgregados++;
+        }
+      }
+      const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+      return fechaBase.toLocaleDateString('es-MX', opciones);
+    }
+
+    function showToast(msg, type = "success") {
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toast-msg");
+      const icon = document.getElementById("toast-icon");
+      
+      toastMsg.innerText = msg;
+      icon.className = type === "success" ? "fa-solid fa-circle-check text-emerald-400 text-lg" : "fa-solid fa-triangle-exclamation text-amber-400 text-lg";
+      
+      toast.classList.remove("translate-y-20", "opacity-0");
+      setTimeout(() => {
+        toast.classList.add("translate-y-20", "opacity-0");
+      }, 3500);
+    }
+
+    function saveData() {
+      localStorage.setItem("eliotec_orders", JSON.stringify(orders));
+      localStorage.setItem("eliotec_cart", JSON.stringify(cart));
+      localStorage.setItem("eliotec_current_user", JSON.stringify(currentUser));
+    }
+
+    function switchTab(tabId) {
+      document.getElementById("view-store").classList.add("hidden");
+      document.getElementById("view-tracker").classList.add("hidden");
+      document.getElementById("view-admin").classList.add("hidden");
+
+      document.getElementById("nav-store").className = "hover:text-blue-600 transition";
+      document.getElementById("nav-tracker").className = "hover:text-blue-600 transition";
+      const navAdmin = document.getElementById("nav-admin");
+      if(navAdmin) navAdmin.className = "hover:text-blue-600 transition";
+
+      if(tabId === 'store') {
+        document.getElementById("view-store").classList.remove("hidden");
+        document.getElementById("nav-store").className = "hover:text-blue-600 transition text-blue-600 font-bold";
+      } else if(tabId === 'tracker') {
+        document.getElementById("view-tracker").classList.remove("hidden");
+        document.getElementById("nav-tracker").className = "hover:text-blue-600 transition text-blue-600 font-bold";
+      } else if(tabId === 'admin') {
+        if(!currentUser || currentUser.email !== "admin@eliotec.com") {
+          showToast("Inicia sesión como administrador (admin@eliotec.com)", "error");
+          openAuthModal('login');
+          return;
+        }
+        document.getElementById("view-admin").classList.remove("hidden");
+        if(navAdmin) navAdmin.className = "hover:text-blue-600 transition text-blue-600 font-bold";
+        renderAdmin();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById("mobile-menu");
+      menu.classList.toggle("hidden");
+    }
+
+    function renderProducts(category = 'all', page = 1) {
+      const grid = document.getElementById("products-grid");
+      let filtered = category === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === category);
+      
+      const perPage = 36;
+      const totalPages = Math.ceil(filtered.length / perPage);
+      const sliceData = filtered.slice((page - 1) * perPage, page * perPage);
+
+      grid.innerHTML = sliceData.map(p => `
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between group">
+          <div>
+            <div class="relative overflow-hidden rounded-2xl bg-slate-100 mb-4 aspect-square">
+              <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x400/e2e8f0/64748b?text=ELIOTEC'">
+              <span class="absolute top-3 left-3 px-2.5 py-1 ${p.category === 'Audio' ? 'bg-blue-600 text-white' : 'bg-white/90 text-slate-800'} backdrop-blur-md text-xs font-bold rounded-lg shadow-sm">${p.category}</span>
+            </div>
+            <div class="flex items-center gap-1 text-amber-500 text-xs font-bold mb-1">
+              <i class="fa-solid fa-star"></i> <span>${p.rating}</span>
+            </div>
+            <h3 class="font-bold text-slate-900 text-base mb-1 line-clamp-1">${p.name}</h3>
+            <p class="text-xs text-slate-500 line-clamp-2 mb-4">${p.desc}</p>
+          </div>
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+            <div>
+              <span class="text-xs text-slate-400 block">Precio MXN</span>
+              <span class="text-lg font-black text-slate-900">${money(p.price)}</span>
+            </div>
+            <button onclick="addToCart(${p.id})" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition text-sm flex items-center gap-1.5 shadow-md shadow-blue-600/20">
+              <i class="fa-solid fa-cart-plus"></i> Añadir
+            </button>
+          </div>
+        </div>
+      `).join("");
+
+      if (totalPages > 1) {
+        let paginationHTML = `<div class="col-span-full flex justify-center items-center gap-2 pt-6">`;
+        for (let i = 1; i <= Math.min(totalPages, 10); i++) {
+          paginationHTML += `<button onclick="renderProducts('${category}', ${i})" class="px-3 py-1.5 rounded-lg text-xs font-bold ${i === page ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'}">${i}</button>`;
+        }
+        if (totalPages > 10) paginationHTML += `<span class="text-xs text-slate-400">... (+${filtered.length} total)</span>`;
+        paginationHTML += `</div>`;
+        grid.innerHTML += paginationHTML;
+      }
+    }
+
+    function filterProducts(cat) {
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        if(btn.dataset.cat === cat) {
+          btn.className = "px-4 py-2 text-xs font-bold bg-slate-900 text-white rounded-xl filter-btn active-filter";
+        } else {
+          btn.className = "px-4 py-2 text-xs font-bold bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-100 filter-btn";
+        }
+      });
+      renderProducts(cat, 1);
+    }
+
+    function updateCartCount() {
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById("cart-count").innerText = count;
+    }
+
+    function addToCart(id) {
+      const product = PRODUCTS.find(p => p.id === id);
+      const existing = cart.find(item => item.id === id);
+      if(existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+      saveData();
+      updateCartCount();
+      showToast(`¡${product.name} agregado al carrito!`);
+    }
+
+    function openCart() {
+      const modal = document.getElementById("cart-modal");
+      modal.classList.remove("hidden");
+      renderCartItems();
+    }
+
+    function closeCart() {
+      document.getElementById("cart-modal").classList.add("hidden");
+    }
+
+    function renderCartItems() {
+      const container = document.getElementById("cart-items-container");
+      if(cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-16 space-y-3">
+            <div class="text-4xl text-slate-300"><i class="fa-solid fa-cart-shopping"></i></div>
+            <p class="text-slate-500 font-medium">Tu carrito está vacío.</p>
+          </div>
+        `;
+        document.getElementById("cart-subtotal").innerText = money(0);
+        document.getElementById("cart-total").innerText = money(0);
+        return;
+      }
+
+      container.innerHTML = cart.map((item, idx) => `
+        <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+          <img src="${item.img}" class="w-16 h-16 object-cover rounded-xl bg-white" onerror="this.src='https://placehold.co/100x100'">
+          <div class="flex-1 min-w-0">
+            <h4 class="font-bold text-slate-900 text-sm truncate">${item.name}</h4>
+            <span class="text-xs text-slate-500">${money(item.price)} c/u</span>
+            <div class="flex items-center gap-2 mt-1.5">
+              <button onclick="updateQty(${idx}, -1)" class="w-6 h-6 bg-white border border-slate-200 rounded-lg text-xs font-bold hover:bg-slate-100">-</button>
+              <span class="text-xs font-bold">${item.quantity}</span>
+              <button onclick="updateQty(${idx}, 1)" class="w-6 h-6 bg-white border border-slate-200 rounded-lg text-xs font-bold hover:bg-slate-100">+</button>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-bold text-slate-900 text-sm">${money(item.price * item.quantity)}</span>
+            <button onclick="removeFromCart(${idx})" class="block text-xs text-rose-500 hover:text-rose-700 mt-2 font-medium">Eliminar</button>
+          </div>
+        </div>
+      `).join("");
+
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      document.getElementById("cart-subtotal").innerText = money(subtotal);
+      document.getElementById("cart-total").innerText = money(subtotal);
+    }
+
+    function updateQty(idx, delta) {
+      cart[idx].quantity += delta;
+      if(cart[idx].quantity <= 0) {
+        cart.splice(idx, 1);
+      }
+      saveData();
+      updateCartCount();
+      renderCartItems();
+    }
+
+    function removeFromCart(idx) {
+      cart.splice(idx, 1);
+      saveData();
+      updateCartCount();
+      renderCartItems();
+    }
+
+    function proceedToCheckout() {
+      if(cart.length === 0) {
+        showToast("Agrega productos antes de pagar.", "error");
+        return;
+      }
+      closeCart();
+      
+      if(currentUser) {
+        document.getElementById("chk-name").value = currentUser.name || "";
+      }
+      
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      document.getElementById("chk-items-count").innerText = cart.reduce((s, i) => s + i.quantity, 0);
+      document.getElementById("chk-total-amount").innerText = money(subtotal);
+      
+      document.getElementById("checkout-modal").classList.remove("hidden");
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById("checkout-modal").classList.add("hidden");
+    }
+
+    function autofillLocation() {
+      if (!navigator.geolocation) {
+        showToast("Tu navegador no soporta geolocalización.", "error");
+        return;
+      }
+
+      showToast("Obteniendo tu ubicación actual...");
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+            const data = await response.json();
+
+            if (data && data.address) {
+              const addr = data.address;
+              const road = addr.road || addr.street || '';
+              const houseNumber = addr.house_number || '';
+              const suburb = addr.suburb || addr.neighbourhood || addr.city_district || '';
+              const city = addr.city || addr.town || addr.municipality || '';
+              
+              const fullAddress = `${road} ${houseNumber}, Col. ${suburb}, ${city}`.trim();
+              
+              document.getElementById("chk-address").value = fullAddress;
+              showToast("¡Dirección rellenada con tu ubicación!");
+            } else {
+              document.getElementById("chk-address").value = `Lat: ${lat}, Lon: ${lon}`;
+              showToast("Ubicación obtenida mediante coordenadas.");
+            }
+          } catch (error) {
+            console.error("Error al obtener la dirección:", error);
+            document.getElementById("chk-address").value = `Lat: ${lat}, Lon: ${lon}`;
+            showToast("No se pudo traducir la dirección exacta, se usaron coordenadas.", "error");
+          }
+        },
+        (error) => {
+          console.error(error);
+          showToast("No se pudo obtener la ubicación. Revisa permisos.", "error");
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
+    function completeOrder(e) {
+      e.preventDefault();
+      const name = document.getElementById("chk-name").value;
+      const phone = document.getElementById("chk-phone").value;
+      const pay = document.getElementById("chk-pay").value;
+      const address = document.getElementById("chk-address").value;
+      
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const newOrderId = `ELI-${Math.floor(1000 + Math.random() * 9000)}`;
+      
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      const newOrder = {
+        id: newOrderId,
+        date: dateStr,
+        name: name,
+        phone: phone,
+        pay: pay,
+        address: address,
+        items: [...cart],
+        total: subtotal,
+        status: "Pedido recibido",
+        driver: { name: "Agente Asignado ELIOTEC", vehicle: "Unidad Express #402", lat: 19.43, lng: -99.13, speed: "0 km/h" },
+        routeSteps: ["Pedido Recibido en Sistema", "En espera de validación de pago", "Preparando en almacén"]
+      };
+
+      orders.unshift(newOrder);
+      cart = [];
+      saveData();
+      updateCartCount();
+      closeCheckoutModal();
+
+      showToast(`¡Pedido ${newOrderId} creado con éxito!`);
+      
+      switchTab('tracker');
+      document.getElementById("track-input").value = newOrderId;
+      searchTracking();
+    }
+
+    function openAuthModal(mode = 'login') {
+      setAuthMode(mode);
+      document.getElementById("auth-modal").classList.remove("hidden");
+    }
+
+    function closeAuthModal() {
+      document.getElementById("auth-modal").classList.add("hidden");
+    }
+
+    function setAuthMode(mode) {
+      authModeState = mode;
+      const title = document.getElementById("auth-title");
+      const nameContainer = document.getElementById("name-field-container");
+      const submitBtn = document.getElementById("auth-submit-btn");
+      const tabLogin = document.getElementById("tab-login");
+      const tabRegister = document.getElementById("tab-register");
+
+      if(mode === 'login') {
+        title.innerText = "Iniciar Sesión";
+        nameContainer.classList.add("hidden");
+        submitBtn.innerText = "Ingresar";
+        tabLogin.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm transition";
+        tabRegister.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 transition";
+      } else {
+        title.innerText = "Registro de Cliente";
+        nameContainer.classList.remove("hidden");
+        submitBtn.innerText = "Crear Cuenta";
+        tabRegister.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow-sm transition";
+        tabLogin.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 transition";
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById("auth-email").value;
+      const pass = document.getElementById("auth-password").value;
+      const name = document.getElementById("auth-name").value;
+
+      if(authModeState === 'register') {
+        currentUser = { email, name: name || email.split('@')[0] };
+        saveData();
+        showToast("¡Cuenta creada e iniciada con éxito!");
+        closeAuthModal();
+        updateAuthUI();
+      } else {
+        if(email === "admin@eliotec.com") {
+          currentUser = { email, name: "Administrador ELIOTEC" };
+        } else {
+          currentUser = { email, name: email.split('@')[0] };
+        }
+        saveData();
+        showToast("¡Sesión iniciada correctamente!");
+        closeAuthModal();
+        updateAuthUI();
+      }
+    }
+
+    function updateAuthUI() {
+      const container = document.getElementById("auth-container");
+      const mobileAdminBtn = document.getElementById("mobile-admin-btn");
+      const navAdmin = document.getElementById("nav-admin");
+
+      if(currentUser) {
+        container.innerHTML = `
+          <div class="flex items-center gap-2">
+            <div class="hidden sm:block text-right">
+              <span class="text-xs font-bold text-slate-900 block truncate max-w-[120px]">${currentUser.name}</span>
+              <span class="text-[10px] text-slate-500 block">Cliente Registrado</span>
+            </div>
+            <button onclick="logout()" title="Cerrar Sesión" class="p-2.5 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-700 rounded-xl transition">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        `;
+        if(currentUser.email === "admin@eliotec.com") {
+          if(mobileAdminBtn) mobileAdminBtn.classList.remove("hidden");
+          if(navAdmin) navAdmin.classList.remove("hidden");
+        }
+      } else {
+        container.innerHTML = `
+          <button onclick="openAuthModal('login')" class="px-4 py-2 text-sm font-bold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition shadow-sm">
+            <i class="fa-solid fa-user mr-1.5"></i> Ingresar
+          </button>
+        `;
+        if(mobileAdminBtn) mobileAdminBtn.classList.add("hidden");
+        if(navAdmin) navAdmin.classList.add("hidden");
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      saveData();
+      updateAuthUI();
+      showToast("Sesión cerrada.");
+      switchTab('store');
+    }
+
+    const STATUS_FLOW = ["Pedido recibido", "Preparando", "Enviado", "En camino", "Entregado"];
+
+    function searchTracking() {
+      refreshOrdersFromSalesControl();
+
+      const query = document.getElementById("track-input").value.trim().toUpperCase();
+      const display = document.getElementById("tracking-display");
+
+      if(!query) {
+        display.classList.remove("hidden");
+        display.innerHTML = `
+          <div class="text-center py-10 space-y-3">
+            <div class="text-amber-500 text-3xl"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <h4 class="font-bold text-slate-900 text-lg">Consulta tu número de pedido</h4>
+            <p class="text-xs text-slate-500">El rastreo consulta directamente todos los pedidos registrados.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const order = orders.find(o => String(o.id || "").toUpperCase() === query);
+
+      if(!order) {
+        display.classList.remove("hidden");
+        display.innerHTML = `
+          <div class="text-center py-10 space-y-3">
+            <div class="text-rose-500 text-3xl"><i class="fa-solid fa-circle-exclamation"></i></div>
+            <h4 class="font-bold text-slate-900 text-lg">No encontramos el pedido "${query}"</h4>
+            <p class="text-xs text-slate-500">Verifica el número de pedido e intenta nuevamente.</p>
+          </div>
+        `;
+        return;
+      }
+
+      display.classList.remove("hidden");
+      const currentIdx = STATUS_FLOW.indexOf(order.status);
+      const safeDriver = order.driver || {name:"Agente ELIOTEC", vehicle:"Unidad de reparto", speed:"0 km/h"};
+      const safeItems = Array.isArray(order.items) ? order.items : [];
+      const fechaEstimadaStr = calcularFechaEstimada(order.date);
+      const promedioCalificacion = safeItems.length > 0 ? (safeItems.reduce((acc, item) => acc + (item.rating || 4.8), 0) / safeItems.length).toFixed(1) : "4.8";
+
+      const statusMessageMap = {
+        "Pedido recibido": "recibimos tu pedido",
+        "Preparando": "tu pedido se está empaquetando",
+        "Enviado": "tu paquete salió de su origen",
+        "En camino": "tu paquete está en la zona para llegar a tu domicilio",
+        "Entregado": "Pedido Entregado en Destino"
+      };
+
+      display.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-bold px-2.5 py-1 bg-blue-100 text-blue-700 rounded-lg">${order.id}</span>
+                <span class="text-xs text-slate-500"><i class="fa-regular fa-clock mr-1"></i> ${order.date || "Fecha no disponible"}</span>
+              </div>
+              <h3 class="text-lg font-black text-slate-900 mt-1">Destinatario: ${order.name || "Cliente"}</h3>
+              <p class="text-xs text-slate-600 mt-0.5"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${order.address || "Dirección no disponible"}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-400 block">Total del Pedido</span>
+              <span class="text-xl font-black text-slate-900">${money(Number(order.total || 0))}</span>
+            </div>
+          </div>
+
+          <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-sm text-emerald-900">
+            <div class="font-black mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Estado de tu paquete</div>
+            <div>${statusMessageMap[order.status] || "Tu pedido está siendo procesado."}</div>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="font-bold text-slate-900 text-sm">Progreso Actual de la Entrega</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+              ${STATUS_FLOW.map((step, idx) => {
+                const isPassed = idx <= currentIdx;
+                const isCurrent = idx === currentIdx;
+                return `
+                  <div class="p-4 rounded-2xl border transition ${isCurrent ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20' : (isPassed ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-slate-50 text-slate-400 border-slate-200')}">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-bold">Paso ${idx+1}</span>${isPassed ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-regular fa-clock"></i>'}
+                    </div>
+                    <div class="font-bold text-sm leading-tight">${step}</div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
+            <div class="lg:col-span-2 bg-slate-900 rounded-2xl overflow-hidden relative shadow-inner min-h-[280px] flex items-center justify-center border border-slate-800">
+              <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#60a5fa_1px,transparent_1px)] [background-size:16px_16px]"></div>
+              <div class="absolute z-10 text-center space-y-3 p-6">
+                <div class="relative w-16 h-16 mx-auto flex items-center justify-center">
+                  <div class="absolute inset-0 bg-blue-500 rounded-full map-pulse"></div>
+                  <div class="relative w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg text-lg">
+                    <i class="fa-solid fa-truck"></i>
+                  </div>
+                </div>
+                <div>
+                  <span class="px-3 py-1 bg-white/10 backdrop-blur-md text-blue-300 rounded-full text-xs font-bold border border-white/20">GPS Activo en Ruta</span>
+                  <h4 class="text-white font-bold text-base mt-2">${statusMessageMap[order.status] || "Seguimiento en curso"}</h4>
+                  <p class="text-xs text-slate-400 mt-1">Velocidad estimada: <span class="text-emerald-400 font-bold">${safeDriver.speed || "0 km/h"}</span></p>
+                </div>
+              </div>
+              <div class="absolute bottom-3 left-3 right-3 bg-slate-950/80 backdrop-blur-md p-3 rounded-xl border border-slate-800 flex items-center justify-center text-xs text-slate-300">
+                <span class="truncate max-w-[280px] text-center"><i class="fa-solid fa-house text-emerald-400 mr-1.5"></i> Destino: ${order.address || "Dirección del cliente"}</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
+              <div>
+                <h4 class="font-bold text-slate-900 text-sm mb-3">Detalle de Reparto</h4>
+                <div class="space-y-3 text-xs">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-base"><i class="fa-solid fa-user"></i></div>
+                    <div><span class="text-slate-400 block text-[10px]">Cliente</span><strong class="text-slate-800 text-sm">${order.name || "No registrado"}</strong></div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-base"><i class="fa-solid fa-phone"></i></div>
+                    <div><span class="text-slate-400 block text-[10px]">Teléfono</span><strong class="text-slate-800 text-sm">${order.phone || "No registrado"}</strong></div>
+                  </div>
+                  <div class="flex items-center gap-3 bg-blue-50/70 p-2.5 rounded-xl border border-blue-100">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs"><i class="fa-regular fa-calendar-days"></i></div>
+                    <div><span class="text-blue-600 block text-[10px] font-bold">Entrega estimada</span><strong class="text-slate-900 text-xs">${fechaEstimadaStr}</strong></div>
+                  </div>
+                  <div class="flex items-center gap-3 bg-amber-50/70 p-2.5 rounded-xl border border-amber-100">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-star"></i></div>
+                    <div><span class="text-amber-700 block text-[10px] font-bold">Calificación</span><strong class="text-slate-900 text-xs">${promedioCalificacion} / 5.0 Estrellas</strong></div>
+                  </div>
+                  <div class="flex items-center gap-3 bg-rose-50/70 p-2.5 rounded-xl border border-rose-100">
+                    <div class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-shield-heart"></i></div>
+                    <div><span class="text-rose-700 block text-[10px] font-bold">Garantía</span><strong class="text-slate-900 text-[11px] block">Devolución gratis de 100% en caso de daños.</strong></div>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-4 border-t border-slate-200">
+                <span class="text-xs font-bold text-slate-700 block mb-2">Artículos (${safeItems.reduce((s,i)=>s+Number(i.quantity||1),0)})</span>
+                <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                  ${safeItems.map(i => `<div class="flex justify-between text-xs text-slate-600"><span class="truncate max-w-[160px]">• ${i.name}</span><span class="font-bold">${Number(i.quantity||1)}x</span></div>`).join("") || '<div class="text-xs text-slate-400">Sin artículos registrados.</div>'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getAnnualDeliveryProgress() {
+      const currentYear = new Date().getFullYear();
+      const annualOrders = orders.filter(o => {
+        const d = new Date(o.date);
+        return !isNaN(d.getTime()) && d.getFullYear() === currentYear;
+      });
+      const delivered = annualOrders.filter(o => o.status === 'Entregado').length;
+      const total = annualOrders.length;
+      const percent = total ? Math.round((delivered / total) * 100) : 0;
+      return { currentYear, delivered, total, percent };
+    }
+
+    function renderAdmin() {
+      refreshOrdersFromSalesControl();
+      const totalSales = orders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+      const activeDeliveries = orders.filter(o => o.status !== 'Entregado').length;
+      const annual = getAnnualDeliveryProgress();
+
+      document.getElementById("admin-stats").innerHTML = `
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total de Pedidos</span>
+          <div class="text-3xl font-black text-slate-900 mt-2">${orders.length}</div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ventas Acumuladas</span>
+          <div class="text-3xl font-black text-blue-600 mt-2">${money(totalSales)}</div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Envíos en Proceso</span>
+          <div class="text-3xl font-black text-purple-600 mt-2">${activeDeliveries}</div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Progreso Anual de Entregas</span>
+            <span class="text-lg font-black text-emerald-600">${annual.percent}%</span>
+          </div>
+          <div class="text-xs text-slate-500 mt-2">${annual.delivered} entregado(s) de ${annual.total} pedido(s) en ${annual.currentYear}</div>
+          <div class="w-full h-3 bg-slate-100 rounded-full mt-3 overflow-hidden">
+            <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width:${annual.percent}%"></div>
+          </div>
+        </div>
+      `;
+
+      const tbody = document.getElementById("admin-orders-body");
+      tbody.innerHTML = orders.map((o, idx) => `
+        <tr class="hover:bg-slate-50/80 transition">
+          <td class="p-3.5 font-bold text-slate-900">${o.id}</td>
+          <td class="p-3.5 text-slate-500 text-xs">${o.date}</td>
+          <td class="p-3.5 font-semibold text-slate-800">${o.name}</td>
+          <td class="p-3.5 font-bold text-slate-900">${money(o.total)}</td>
+          <td class="p-3.5 text-slate-600 text-xs">${o.pay}</td>
+          <td class="p-3.5">
+            <span class="px-2.5 py-1 text-xs font-bold rounded-lg ${o.status === 'Entregado' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">${o.status}</span>
+          </td>
+          <td class="p-3.5">
+            <select onchange="updateOrderStatus(${idx}, this.value)" class="px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+              ${STATUS_FLOW.map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${s}</option>`).join("")}
+            </select>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function updateOrderStatus(index, newStatus) {
+      refreshOrdersFromSalesControl();
+      const orderId = orders[index] && orders[index].id;
+      const realIndex = orders.findIndex(o => o.id === orderId);
+      if(realIndex < 0) return;
+      orders[realIndex].status = newStatus;
+      saveData();
+      showToast(`Estatus actualizado a: ${newStatus}`);
+      renderAdmin();
+      const input = document.getElementById("track-input");
+      if(input && input.value.trim().toUpperCase() === orderId) searchTracking();
+    }
+
+    window.onload = function() {
+      renderProducts();
+      updateCartCount();
+      updateAuthUI();
+      
+      if(!currentUser) {
+        currentUser = { email: "carlos@eliotec.com", name: "Carlos Mendoza" };
+        saveData();
+        updateAuthUI();
+      }
+    };
+  </script>
+</body>
+</html>
